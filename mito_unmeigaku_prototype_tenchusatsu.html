@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f4eee3">
+<title>美灯運命学｜命式チェック試作版</title>
+<style>
+:root{--ink:#2f302d;--muted:#77766f;--paper:#fbfaf7;--gold:#9b7944;--line:#e4ded2;--panel:#fff;--soft:#f2ece1}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif;line-height:1.55}
+main{max-width:760px;margin:auto;padding:18px 14px 42px}
+.hero{background:linear-gradient(135deg,#f3eadb,#fffdf9);border:1px solid var(--line);border-radius:20px;padding:22px 18px;margin-bottom:16px}
+.kicker{font-size:11px;letter-spacing:.16em;color:var(--gold);font-weight:700}
+.hero h1{font-size:25px;margin:5px 0 3px;letter-spacing:.04em}
+.hero p{margin:0;color:#6d675d;font-size:13px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:17px;margin:13px 0;box-shadow:0 2px 10px #33250a08}
+h2{font-size:17px;margin:0 0 12px}
+label{font-size:13px;color:var(--muted);display:block;margin:12px 0 6px}
+input,button,select{font:inherit}
+input[type=date],select{width:100%;padding:12px;border:1px solid #d7d0c4;border-radius:10px;background:#fff;color:var(--ink);min-height:46px}
+button{border:0;border-radius:10px;padding:12px 16px;background:#65543c;color:white;font-weight:650;width:100%;margin-top:12px;min-height:46px}
+.note{font-size:12px;color:var(--muted);margin:9px 0 0}
+.pillars{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.pillar{border:1px solid var(--line);border-radius:12px;text-align:center;padding:13px 5px;background:#fffdf9}
+.pillar .label{font-size:12px;color:var(--muted)}
+.pillar .kanji{font-size:27px;font-weight:750;letter-spacing:.08em;margin:4px 0}
+.pillar .sub{font-size:11px;color:var(--muted)}
+.status{display:inline-block;background:#f3eadb;color:#6c512b;border-radius:99px;padding:4px 9px;font-size:11px;font-weight:700;margin-bottom:8px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:9px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-weight:600;width:34%}
+.warning{border-left:3px solid var(--gold);padding:10px 12px;background:#faf6ee;font-size:12px;color:#625744;border-radius:0 8px 8px 0}
+footer{font-size:11px;color:var(--muted);text-align:center;margin-top:22px}
+@media(min-width:600px){main{padding-top:28px}.hero{padding:28px}.hero h1{font-size:30px}}
+</style>
+</head>
+<body>
+<main>
+<header class="hero">
+  <div class="kicker">MITO · UNMEIGAKU</div>
+  <h1>美灯運命学</h1>
+  <p>自分を知り、運命を活かす。<br>算命学の命式チェックを、スマートフォンから。</p>
+</header>
+
+<section class="card">
+  <h2>生年月日を入力</h2>
+  <label for="birth">生年月日（日本の暦）</label>
+  <input id="birth" type="date" min="1900-01-01" max="2099-12-31">
+  <label for="gender">性別（将来の大運計算に使用）</label>
+  <select id="gender">
+    <option value="">選択してください</option>
+    <option value="male">男性</option>
+    <option value="female">女性</option>
+  </select>
+  <button id="calc" type="button">命式を算出する</button>
+  <p class="note">入力した生年月日はこのページ内で計算します。サーバーには送信しません。</p>
+</section>
+
+<section class="card" id="result" aria-live="polite">
+  <span class="status">検証用試作</span>
+  <h2 id="resultTitle">三柱</h2>
+  <div class="pillars">
+    <div class="pillar"><div class="label">日柱</div><div class="kanji" id="dayP">—</div><div class="sub" id="dayNote">暦日基準</div></div>
+    <div class="pillar"><div class="label">月柱</div><div class="kanji" id="monthP">—</div><div class="sub" id="monthNote">節入り基準</div></div>
+    <div class="pillar"><div class="label">年柱</div><div class="kanji" id="yearP">—</div><div class="sub" id="yearNote">立春基準</div></div>
+  </div>
+  <p class="note" id="summary"></p>
+</section>
+
+<section class="card" id="tenchusatsuCard">
+  <h2>日干支からみる天中殺</h2>
+  <div class="pillars" style="grid-template-columns:1fr 1fr">
+    <div class="pillar"><div class="label">天中殺</div><div class="kanji" id="tenchusatsuName">—</div></div>
+    <div class="pillar"><div class="label">天中殺となる地支</div><div class="kanji" id="tenchusatsuBranches">—</div></div>
+  </div>
+  <p class="note" id="tenchusatsuNote">命式を算出すると、日柱の干支から表示します。</p>
+</section>
+
+<section class="card">
+  <h2>節入り日時・計算根拠</h2>
+  <table><tbody>
+    <tr><th>直前の節入り</th><td id="prevTerm">—</td></tr>
+    <tr><th>次の節入り</th><td id="nextTerm">—</td></tr>
+    <tr><th>節入りからの日数</th><td id="elapsed">—</td></tr>
+    <tr><th>年柱の境界</th><td id="yearBoundary">—</td></tr>
+    <tr><th>暦計算の基準</th><td>太陽黄経の近似計算／日本時間表示</td></tr>
+  </tbody></table>
+  <p class="note">このページは日付のみを入力する試作版です。出生時刻による節入り前後の判定には対応していません。</p>
+</section>
+
+<section class="card">
+  <h2>高尾学館式との照合について</h2>
+  <div class="warning">この試作版は、高尾学館式の公式資料・万年暦との全件照合が済んでいません。正式な鑑定や重要な判断には使用しないでください。</div>
+  <table style="margin-top:10px"><tbody>
+    <tr><th>年柱・月柱</th><td>節入り境界と干支表の照合が必要</td></tr>
+    <tr><th>日柱</th><td>基準日と複数日付の照合が必要</td></tr>
+    <tr><th>蔵干・十大主星</th><td>高尾学館式の表・配分規則を確認後に実装</td></tr>
+    <tr><th>十二大従星・人体星図</th><td>配置規則を確認後に実装</td></tr>
+    <tr><th>性別</th><td id="genderResult">未選択</td></tr>
+    <tr><th>大運・立運</th><td>順逆・起運年齢・端数処理の照合後に実装</td></tr>
+  </tbody></table>
+</section>
+<footer>美灯運命学 · 検証用試作版<br>計算規則と暦データを検証中です</footer>
+</main>
+
+<script>
+"use strict";
+const stems=["甲","乙","丙","丁","戊","己","庚","辛","壬","癸"];
+const branches=["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
+const terms=[
+ {name:"立春",lon:315,monthBranch:2},{name:"啓蟄",lon:345,monthBranch:3},
+ {name:"清明",lon:15,monthBranch:4},{name:"立夏",lon:45,monthBranch:5},
+ {name:"芒種",lon:75,monthBranch:6},{name:"小暑",lon:105,monthBranch:7},
+ {name:"立秋",lon:135,monthBranch:8},{name:"白露",lon:165,monthBranch:9},
+ {name:"寒露",lon:195,monthBranch:10},{name:"立冬",lon:225,monthBranch:11},
+ {name:"大雪",lon:255,monthBranch:0},{name:"小寒",lon:285,monthBranch:1}
+];
+const rad=Math.PI/180;
+const DAY_MS=86400000;
+
+function jdFromDate(d){return d.getTime()/DAY_MS+2440587.5;}
+function solarLon(date){
+  const jd=jdFromDate(date),T=(jd-2451545)/36525;
+  let L0=(280.46646+T*(36000.76983+T*0.0003032))%360;
+  if(L0<0)L0+=360;
+  const M=(357.52911+T*(35999.05029-0.0001537*T))%360;
+  const C=(1.914602-T*(0.004817+0.000014*T))*Math.sin(M*rad)
+    +(0.019993-0.000101*T)*Math.sin(2*M*rad)
+    +0.000289*Math.sin(3*M*rad);
+  const omega=125.04-1934.136*T;
+  let lon=(L0+C-0.00569-0.00478*Math.sin(omega*rad))%360;
+  if(lon<0)lon+=360;
+  return lon;
+}
+function termInstant(year,term){
+  const target=term.lon;
+  const start=Date.UTC(year,0,1),end=Date.UTC(year+1,0,1);
+  let prev=start,prevLon=solarLon(new Date(prev)),bracket=null;
+  for(let t=start+DAY_MS;t<=end;t+=DAY_MS){
+    const lon=solarLon(new Date(t));
+    const moved=(lon-prevLon+360)%360;
+    const toTarget=(target-prevLon+360)%360;
+    if(toTarget<=moved+0.02 && moved<2.0){bracket=[prev,t];break;}
+    prev=t;prevLon=lon;
+  }
+  if(!bracket)return null;
+  let a=bracket[0],b=bracket[1];
+  for(let i=0;i<40;i++){
+    const mid=(a+b)/2;
+    const fromA=(target-solarLon(new Date(a))+360)%360;
+    const fromMid=(target-solarLon(new Date(mid))+360)%360;
+    if(fromMid<fromA)b=mid;else a=mid;
+  }
+  return new Date((a+b)/2);
+}
+function allTermsNear(year){
+  const arr=[];
+  for(let y=year-1;y<=year+1;y++){
+    for(const term of terms){
+      const date=termInstant(y,term);
+      if(date)arr.push({date,name:term.name,monthBranch:term.monthBranch,year:y});
+    }
+  }
+  return arr.sort((a,b)=>a.date-b.date);
+}
+function jstParts(date){
+  const parts=new Intl.DateTimeFormat("en-GB",{
+    timeZone:"Asia/Tokyo",year:"numeric",month:"2-digit",day:"2-digit",
+    hour:"2-digit",minute:"2-digit",hourCycle:"h23"
+  }).formatToParts(date);
+  return Object.fromEntries(parts.filter(p=>p.type!=="literal").map(p=>[p.type,p.value]));
+}
+function jstDateKey(date){
+  const p=jstParts(date);
+  return `${p.year}-${p.month}-${p.day}`;
+}
+function fmtJst(date){
+  const p=jstParts(date);
+  return `${p.year}年${Number(p.month)}月${Number(p.day)}日 ${p.hour}:${p.minute}（日本時間）`;
+}
+function sexagenary(index){
+  index=((index%60)+60)%60;
+  return stems[index%10]+branches[index%12];
+}
+function dayIndexFromCivil(y,m,d){
+  const civil=Date.UTC(y,m-1,d);
+  const base=Date.UTC(1800,0,1);
+  return ((26+Math.round((civil-base)/DAY_MS))%60+60)%60;
+}
+function setText(id,value){document.getElementById(id).textContent=value;}
+
+// 六十干支の旬ごとの空亡（天中殺）。日干支の旬から対応する二支を求める。
+const tenchusatsuByXun=[
+  {name:"戌亥天中殺",branches:"戌・亥"},
+  {name:"申酉天中殺",branches:"申・酉"},
+  {name:"午未天中殺",branches:"午・未"},
+  {name:"辰巳天中殺",branches:"辰・巳"},
+  {name:"寅卯天中殺",branches:"寅・卯"},
+  {name:"子丑天中殺",branches:"子・丑"}
+];
+
+function calc(){
+  const value=document.getElementById("birth").value;
+  if(!value)return;
+  const gender=document.getElementById("gender").value;
+  const [y,m,d]=value.split("-").map(Number);
+  const inputDate=new Date(Date.UTC(y,m-1,d,12));
+  const inputKey=`${y}-${String(m).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+  const nearby=allTermsNear(y);
+  const previous=nearby.filter(t=>jstDateKey(t.date)<=inputKey).at(-1);
+  const next=nearby.find(t=>jstDateKey(t.date)>inputKey);
+  if(!previous||!next){
+    setText("summary","節入り日時を特定できませんでした。別の日付で再度お試しください。");
+    return;
+  }
+
+  const latestLiChun=nearby.filter(t=>t.name==="立春"&&jstDateKey(t.date)<=inputKey).at(-1);
+  if(!latestLiChun){
+    setText("summary","年柱の立春境界を特定できませんでした。");
+    return;
+  }
+
+  const pillarYear=latestLiChun.year;
+  const yearIndex=((pillarYear-4)%60+60)%60;
+  const yearStemIndex=yearIndex%10;
+  const yearPillar=sexagenary(yearIndex);
+
+  const monthBranchIndex=previous.monthBranch;
+  const firstMonthStem=((yearStemIndex%5)*2+2)%10;
+  const monthStemIndex=(firstMonthStem+(monthBranchIndex-2+12)%12)%10;
+  const monthPillar=stems[monthStemIndex]+branches[monthBranchIndex];
+
+  const dayIndex=dayIndexFromCivil(y,m,d);
+  const dayPillar=sexagenary(dayIndex);
+  const tenchusatsu=tenchusatsuByXun[Math.floor(dayIndex/10)];
+  const prevKey=jstDateKey(previous.date);
+  const [py,pm,pd]=prevKey.split("-").map(Number);
+  const elapsed=Math.round((Date.UTC(y,m-1,d)-Date.UTC(py,pm-1,pd))/DAY_MS);
+
+  setText("dayP",dayPillar);
+  setText("tenchusatsuName",tenchusatsu.name);
+  setText("tenchusatsuBranches",tenchusatsu.branches);
+  setText("tenchusatsuNote",`日柱 ${dayPillar} が属する旬の空亡を表示しています。日柱の計算精度は引き続き照合が必要です。`);
+  setText("monthP",monthPillar);
+  setText("yearP",yearPillar);
+  setText("prevTerm",`${previous.name}：${fmtJst(previous.date)}`);
+  setText("nextTerm",`${next.name}：${fmtJst(next.date)}`);
+  setText("elapsed",`${elapsed}日（節入り当日を0日とする）`);
+  setText("yearBoundary",`立春：${fmtJst(latestLiChun.date)}`);
+  setText("yearNote",`立春：${jstDateKey(latestLiChun.date)}`);
+  setText("monthNote",`${previous.name}以降`);
+  setText("dayNote","暦日基準");
+  setText("resultTitle",`${y}年${m}月${d}日`);
+  setText("genderResult",gender==="male"?"男性":gender==="female"?"女性":"未選択");
+  setText("summary","年柱は立春、月柱は直前の節入り、日柱は暦日を基準に算出した試作結果です。節入りの時刻をまたぐ出生時刻には対応していません。");
+}
+document.getElementById("calc").addEventListener("click",calc);
+calc();
+</script>
+</body>
+</html>
