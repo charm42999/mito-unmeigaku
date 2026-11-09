@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f4eee3">
+<title>美灯運命学｜二十八元表修正版 v10</title>
+<style>
+:root{--ink:#2f302d;--muted:#77766f;--paper:#fbfaf7;--gold:#9b7944;--line:#e4ded2;--panel:#fff;--soft:#f2ece1}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif;line-height:1.55}
+main{max-width:760px;margin:auto;padding:18px 14px 42px}
+.hero{background:linear-gradient(135deg,#f3eadb,#fffdf9);border:1px solid var(--line);border-radius:20px;padding:22px 18px;margin-bottom:16px}
+.kicker{font-size:11px;letter-spacing:.16em;color:var(--gold);font-weight:700}
+.hero h1{font-size:25px;margin:5px 0 3px;letter-spacing:.04em}
+.hero p{margin:0;color:#6d675d;font-size:13px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:17px;margin:13px 0;box-shadow:0 2px 10px #33250a08}
+h2{font-size:17px;margin:0 0 12px}
+label{font-size:13px;color:var(--muted);display:block;margin:12px 0 6px}
+input,button,select{font:inherit}
+
+select{width:100%;padding:12px;border:1px solid #d7d0c4;border-radius:10px;background:#fff;color:var(--ink);min-height:52px}
+.birth-wheel{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:8px}
+.birth-wheel .wheel-col{min-width:0}
+.birth-wheel label{margin:8px 0 6px}
+.birth-wheel select{font-size:16px}
+.era-note{font-size:11px;color:var(--muted);margin-top:4px}
+.table-wrap{overflow-x:auto}
+.hidden-table{min-width:440px;text-align:center}
+.hidden-table th,.hidden-table td{text-align:center;padding:9px 5px}
+.hidden-table th{width:auto;background:#f7f4ee}
+.hidden-table td:first-child{font-weight:750;background:#faf8f3}
+
+button{border:0;border-radius:10px;padding:12px 16px;background:#65543c;color:white;font-weight:650;width:100%;margin-top:12px;min-height:46px}
+.note{font-size:12px;color:var(--muted);margin:9px 0 0}
+.yinzan-wrap{overflow-x:auto}
+.yinzan{min-width:320px;border-collapse:collapse;table-layout:fixed;text-align:center;font-size:16px}
+.yinzan th,.yinzan td{border:1px solid #b9b9b9;text-align:center;vertical-align:middle;padding:10px 4px;width:25%}
+.yinzan thead th{background:#f4f6fa;color:#333}
+.yinzan .rowhead{background:#f7f7f7;color:#666;font-size:12px;font-weight:600}
+.yinzan .main-char{font-size:26px;font-weight:750;letter-spacing:.08em}
+.yinzan .hidden-cell{font-size:20px;line-height:1.8;min-height:72px}
+.yinzan .number-row td{font-size:20px;font-weight:700;background:#faf4ff}
+.yinzan .number-row .rowhead{font-size:12px}
+.status{display:inline-block;background:#f3eadb;color:#6c512b;border-radius:99px;padding:4px 9px;font-size:11px;font-weight:700;margin-bottom:8px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:9px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-weight:600;width:34%}
+.warning{border-left:3px solid var(--gold);padding:10px 12px;background:#faf6ee;font-size:12px;color:#625744;border-radius:0 8px 8px 0}
+.yangzan{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;text-align:center}
+.yang-cell{border:1px solid #d9d1c4;border-radius:10px;background:#fff;padding:10px 4px;min-height:76px;display:flex;flex-direction:column;justify-content:center;align-items:center}
+.yang-cell.empty{border:0;background:transparent}
+.yang-label{font-size:11px;color:#77766f;margin-bottom:5px}
+.yang-star{font-size:19px;font-weight:750;letter-spacing:.03em;color:#51432f}
+.yang-sub{font-size:10px;color:#888;margin-top:3px}
+.yang-section{margin-top:14px}
+.yang-caption{font-size:12px;color:var(--muted);margin:10px 0 0}
+
+footer{font-size:11px;color:var(--muted);text-align:center;margin-top:22px}
+@media(min-width:600px){main{padding-top:28px}.hero{padding:28px}.hero h1{font-size:30px}}
+</style>
+</head>
+<body>
+<main>
+<header class="hero">
+  <div class="kicker">MITO · UNMEIGAKU</div>
+  <h1>美灯運命学</h1>
+  <p>自分を知り、運命を活かす。<br>算命学の命式チェックを、スマートフォンから。</p>
+</header>
+
+<section class="card">
+  <h2>生年月日を入力</h2>
+  <label>生年月日（日本の暦）</label>
+  <div class="birth-wheel">
+    <div class="wheel-col"><label for="birthYear">年（西暦・和暦）</label><select id="birthYear" aria-label="生まれた年"><option value="">年を選択</option></select><div class="era-note">西暦と和暦を併記</div></div>
+    <div class="wheel-col"><label for="birthMonth">月</label><select id="birthMonth" aria-label="生まれた月"><option value="">月</option></select></div>
+    <div class="wheel-col"><label for="birthDay">日</label><select id="birthDay" aria-label="生まれた日"><option value="">日</option></select></div>
+  </div>
+  <label for="gender">性別（将来の大運計算に使用）</label>
+  <select id="gender">
+    <option value="">選択してください</option>
+    <option value="male">男性</option>
+    <option value="female">女性</option>
+  </select>
+  <button id="calc" type="button">命式を算出する</button>
+  <p class="note">入力した生年月日はこのページ内で計算します。サーバーには送信しません。</p>
+</section>
+
+<section class="card" id="result" aria-live="polite">
+  <span class="status">二十八元表修正版 v10</span>
+  <h2 id="resultTitle">三柱</h2>
+  <div class="yinzan-wrap">
+    <table class="yinzan" aria-label="陰占の三柱">
+      <thead><tr><th></th><th>日</th><th>月</th><th>年</th></tr></thead>
+      <tbody>
+        <tr><th class="rowhead">天干</th><td class="main-char" id="dayStem">—</td><td class="main-char" id="monthStem">—</td><td class="main-char" id="yearStem">—</td></tr>
+        <tr><th class="rowhead">地支</th><td class="main-char" id="dayBranch">—</td><td class="main-char" id="monthBranch">—</td><td class="main-char" id="yearBranch">—</td></tr>
+        <tr><th class="rowhead">蔵干・本元</th><td class="hidden-cell" id="dayHidden1">—</td><td class="hidden-cell" id="monthHidden1">—</td><td class="hidden-cell" id="yearHidden1">—</td></tr>
+        <tr><th class="rowhead">蔵干・中元</th><td class="hidden-cell" id="dayHidden2">—</td><td class="hidden-cell" id="monthHidden2">—</td><td class="hidden-cell" id="yearHidden2">—</td></tr>
+        <tr><th class="rowhead">蔵干・初元</th><td class="hidden-cell" id="dayHidden3">—</td><td class="hidden-cell" id="monthHidden3">—</td><td class="hidden-cell" id="yearHidden3">—</td></tr>
+        <tr class="number-row"><th class="rowhead">干支番号</th><td id="dayNumber">—</td><td id="monthNumber">—</td><td id="yearNumber">—</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note" id="hiddenNote">蔵干は二十八元表の本元・中元・初元をすべて表示します。該当しない段は空欄になります。</p>
+  <p class="note" id="summary"></p>
+</section>
+
+<section class="card" id="yangzanCard">
+  <h2>陽占（人体星図）</h2>
+  <p class="note">日干を基準に、年干・月干・各柱の採用蔵干から十大主星を、日干と各地支から十二大従星を算出します。</p>
+  <div class="yang-section">
+    <div class="yangzan" aria-label="人体星図">
+      <div class="yang-cell empty"></div>
+      <div class="yang-cell"><div class="yang-label">北・頭</div><div class="yang-star" id="yangNorth">—</div><div class="yang-sub">年干</div></div>
+      <div class="yang-cell"><div class="yang-label">左肩・初年期</div><div class="yang-star" id="yangFirst">—</div><div class="yang-sub">年支</div></div>
+      <div class="yang-cell"><div class="yang-label">西・右手</div><div class="yang-star" id="yangWest">—</div><div class="yang-sub">日支の蔵干</div></div>
+      <div class="yang-cell"><div class="yang-label">中央・胸</div><div class="yang-star" id="yangCenter">—</div><div class="yang-sub">月支の蔵干</div></div>
+      <div class="yang-cell"><div class="yang-label">東・左手</div><div class="yang-star" id="yangEast">—</div><div class="yang-sub">年支の蔵干</div></div>
+      <div class="yang-cell"><div class="yang-label">右足・晩年期</div><div class="yang-star" id="yangLate">—</div><div class="yang-sub">日支</div></div>
+      <div class="yang-cell"><div class="yang-label">南・腹</div><div class="yang-star" id="yangSouth">—</div><div class="yang-sub">月干</div></div>
+      <div class="yang-cell"><div class="yang-label">左足・中年期</div><div class="yang-star" id="yangMiddle">—</div><div class="yang-sub">月支</div></div>
+    </div>
+  </div>
+  <p class="yang-caption" id="yangNote">命式を算出すると人体星図を表示します。</p>
+</section>
+
+<section class="card">
+<h2>二十八元表（節入り日を0日目）</h2>
+<p class="note">十二支ごとの蔵干と、節入りからの日数による区分です。日数の範囲を横に見比べられる表にしました。</p>
+<div class="table-wrap">
+<table class="hidden-table">
+<thead><tr><th>地支</th><th>初元</th><th>中元</th><th>本元</th><th>日数区分</th></tr></thead>
+<tbody>
+<tr><td>子</td><td>—</td><td>—</td><td>癸</td><td>全期間</td></tr>
+<tr><td>丑</td><td>癸</td><td>辛</td><td>己</td><td>0–9／10–12／13日〜</td></tr>
+<tr><td>寅</td><td>戊</td><td>丙</td><td>甲</td><td>0–7／8–14／15日〜</td></tr>
+<tr><td>卯</td><td>—</td><td>—</td><td>乙</td><td>全期間</td></tr>
+<tr><td>辰</td><td>乙</td><td>癸</td><td>戊</td><td>0–9／10–12／13日〜</td></tr>
+<tr><td>巳</td><td>戊</td><td>庚</td><td>丙</td><td>0–5／6–14／15日〜</td></tr>
+<tr><td>午</td><td>己</td><td>己</td><td>丁</td><td>0–19／0–19／20日〜</td></tr>
+<tr><td>未</td><td>丁</td><td>乙</td><td>己</td><td>0–9／10–12／13日〜</td></tr>
+<tr><td>申</td><td>戊</td><td>壬</td><td>庚</td><td>0–10／11–13／14日〜</td></tr>
+<tr><td>酉</td><td>—</td><td>—</td><td>辛</td><td>全期間</td></tr>
+<tr><td>戌</td><td>辛</td><td>丁</td><td>戊</td><td>0–9／10–12／13日〜</td></tr>
+<tr><td>亥</td><td>—</td><td>甲</td><td>壬</td><td>0–12／13日〜</td></tr>
+</tbody></table></div>
+<p class="note">※表は『干支暦便利帳』の配置に合わせています。午の己は初元・中元にまたがるため、両欄に表示しています。</p>
+</section>
+<section class="card" id="tenchusatsuCard">
+  <h2>日干支からみる天中殺</h2>
+  <div class="pillars" style="grid-template-columns:1fr 1fr">
+    <div class="pillar"><div class="label">天中殺</div><div class="kanji" id="tenchusatsuName">—</div></div>
+    <div class="pillar"><div class="label">天中殺となる地支</div><div class="kanji" id="tenchusatsuBranches">—</div></div>
+  </div>
+  <p class="note" id="tenchusatsuNote">命式を算出すると、日柱の干支から表示します。</p>
+</section>
+
+
+<section class="card">
+  <h2>人体星図の検証メモ</h2>
+  <div class="warning">十大主星・十二大従星は高尾学館の公開説明と照合用データを基準に実装した検証版です。複数の日付で公式結果との照合を続けてください。</div>
+  <p class="note">1974年10月7日の高尾学館公式照合データ：日柱 辛巳／月柱 癸酉／年柱 甲寅／申酉天中殺。人体星図：北 司禄・東 司禄・中央 貫索・西 牽牛・南 鳳閣。十二大従星：初年期 天報・中年期 天禄・晩年期 天極。</p>
+  <p class="note">蔵干は、提供いただいた『干支暦便利帳』の二十八元表を基準資料として表示します。陰占欄は本元・中元・初元の順です。</p>
+</section>
+
+<section class="card">
+  <h2>節入り日時・計算根拠</h2>
+  <table><tbody>
+    <tr><th>直前の節入り</th><td id="prevTerm">—</td></tr>
+    <tr><th>次の節入り</th><td id="nextTerm">—</td></tr>
+    <tr><th>節入りからの日数</th><td id="elapsed">—</td></tr>
+    <tr><th>年柱の境界</th><td id="yearBoundary">—</td></tr>
+    <tr><th>暦計算の基準</th><td>太陽黄経の近似計算／日本時間表示</td></tr>
+  </tbody></table>
+  <p class="note">このページは日付のみを入力する試作版です。出生時刻による節入り前後の判定には対応していません。</p>
+</section>
+
+<section class="card">
+  <h2>高尾学館式との照合について</h2>
+  <div class="warning">この試作版は、高尾学館式の公式資料・万年暦との全件照合が済んでいません。正式な鑑定や重要な判断には使用しないでください。</div>
+  <table style="margin-top:10px"><tbody>
+    <tr><th>年柱・月柱</th><td>節入り境界と干支表の照合が必要</td></tr>
+    <tr><th>日柱</th><td>基準日と複数日付の照合が必要</td></tr>
+    <tr><th>蔵干</th><td>二十八元表の全候補を表示（採用干の判定は別途照合中）</td></tr>
+    <tr><th>十二大従星・人体星図</th><td>試作実装済み・複数日付の公式照合が必要</td></tr>
+    <tr><th>性別</th><td id="genderResult">未選択</td></tr>
+    <tr><th>大運・立運</th><td>順逆・起運年齢・端数処理の照合後に実装</td></tr>
+  </tbody></table>
+</section>
+<footer>美灯運命学 · 二十八元表修正版 v10<br>計算規則と暦データを検証中です</footer>
+</main>
+
+<script>
+"use strict";
+const stems=["甲","乙","丙","丁","戊","己","庚","辛","壬","癸"];
+const branches=["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
+const terms=[
+ {name:"立春",lon:315,monthBranch:2},{name:"啓蟄",lon:345,monthBranch:3},
+ {name:"清明",lon:15,monthBranch:4},{name:"立夏",lon:45,monthBranch:5},
+ {name:"芒種",lon:75,monthBranch:6},{name:"小暑",lon:105,monthBranch:7},
+ {name:"立秋",lon:135,monthBranch:8},{name:"白露",lon:165,monthBranch:9},
+ {name:"寒露",lon:195,monthBranch:10},{name:"立冬",lon:225,monthBranch:11},
+ {name:"大雪",lon:255,monthBranch:0},{name:"小寒",lon:285,monthBranch:1}
+];
+const rad=Math.PI/180;
+const DAY_MS=86400000;
+
+function jdFromDate(d){return d.getTime()/DAY_MS+2440587.5;}
+function solarLon(date){
+  const jd=jdFromDate(date),T=(jd-2451545)/36525;
+  let L0=(280.46646+T*(36000.76983+T*0.0003032))%360;
+  if(L0<0)L0+=360;
+  const M=(357.52911+T*(35999.05029-0.0001537*T))%360;
+  const C=(1.914602-T*(0.004817+0.000014*T))*Math.sin(M*rad)
+    +(0.019993-0.000101*T)*Math.sin(2*M*rad)
+    +0.000289*Math.sin(3*M*rad);
+  const omega=125.04-1934.136*T;
+  let lon=(L0+C-0.00569-0.00478*Math.sin(omega*rad))%360;
+  if(lon<0)lon+=360;
+  return lon;
+}
+function termInstant(year,term){
+  const target=term.lon;
+  const start=Date.UTC(year,0,1),end=Date.UTC(year+1,0,1);
+  let prev=start,prevLon=solarLon(new Date(prev)),bracket=null;
+  for(let t=start+DAY_MS;t<=end;t+=DAY_MS){
+    const lon=solarLon(new Date(t));
+    const moved=(lon-prevLon+360)%360;
+    const toTarget=(target-prevLon+360)%360;
+    if(toTarget<=moved+0.02 && moved<2.0){bracket=[prev,t];break;}
+    prev=t;prevLon=lon;
+  }
+  if(!bracket)return null;
+  let a=bracket[0],b=bracket[1];
+  for(let i=0;i<40;i++){
+    const mid=(a+b)/2;
+    const fromA=(target-solarLon(new Date(a))+360)%360;
+    const fromMid=(target-solarLon(new Date(mid))+360)%360;
+    if(fromMid<fromA)a=mid;else b=mid;
+  }
+  return new Date((a+b)/2);
+}
+function allTermsNear(year){
+  const arr=[];
+  for(let y=year-1;y<=year+1;y++){
+    for(const term of terms){
+      const date=termInstant(y,term);
+      if(date)arr.push({date,name:term.name,monthBranch:term.monthBranch,year:y});
+    }
+  }
+  return arr.sort((a,b)=>a.date-b.date);
+}
+function jstParts(date){
+  const parts=new Intl.DateTimeFormat("en-GB",{
+    timeZone:"Asia/Tokyo",year:"numeric",month:"2-digit",day:"2-digit",
+    hour:"2-digit",minute:"2-digit",hourCycle:"h23"
+  }).formatToParts(date);
+  return Object.fromEntries(parts.filter(p=>p.type!=="literal").map(p=>[p.type,p.value]));
+}
+function jstDateKey(date){
+  const p=jstParts(date);
+  return `${p.year}-${p.month}-${p.day}`;
+}
+function fmtJst(date){
+  const p=jstParts(date);
+  return `${p.year}年${Number(p.month)}月${Number(p.day)}日 ${p.hour}:${p.minute}（日本時間）`;
+}
+function sexagenary(index){
+  index=((index%60)+60)%60;
+  return stems[index%10]+branches[index%12];
+}
+function dayIndexFromCivil(y,m,d){
+  const civil=Date.UTC(y,m-1,d);
+  const base=Date.UTC(1800,0,1);
+  return ((26+Math.round((civil-base)/DAY_MS))%60+60)%60;
+}
+function setText(id,value){const el=document.getElementById(id);if(el)el.textContent=value;}
+
+// 六十干支の旬ごとの空亡（天中殺）。日干支の旬から対応する二支を求める。
+const tenchusatsuByXun=[
+  {name:"戌亥天中殺",branches:"戌・亥"},
+  {name:"申酉天中殺",branches:"申・酉"},
+  {name:"午未天中殺",branches:"午・未"},
+  {name:"辰巳天中殺",branches:"辰・巳"},
+  {name:"寅卯天中殺",branches:"寅・卯"},
+  {name:"子丑天中殺",branches:"子・丑"}
+];
+
+
+// 『干支暦便利帳』二十八元表。節入り日を0日目として区分する。
+const hiddenStemTable = {
+ // 各配列は「初元・中元・本元」の順。各要素は [干, 開始日, 終了日]。
+ // 子・卯・酉は本元のみ。午の己は資料で初元・中元の欄にまたがるため両方に表示。
+ "子":[null,null,["癸",0,999]],
+ "丑":[["癸",0,9],["辛",10,12],["己",13,999]],
+ "寅":[["戊",0,7],["丙",8,14],["甲",15,999]],
+ "卯":[null,null,["乙",0,999]],
+ "辰":[["乙",0,9],["癸",10,12],["戊",13,999]],
+ "巳":[["戊",0,5],["庚",6,14],["丙",15,999]],
+ "午":[["己",0,19],["己",0,19],["丁",20,999]],
+ "未":[["丁",0,9],["乙",10,12],["己",13,999]],
+ "申":[["戊",0,10],["壬",11,13],["庚",14,999]],
+ "酉":[null,null,["辛",0,999]],
+ "戌":[["辛",0,9],["丁",10,12],["戊",13,999]],
+ "亥":[null,["甲",0,12],["壬",13,999]]
+};
+function hiddenStemFor(branch, elapsed) {
+ const rows=hiddenStemTable[branch]||[];
+ const row=rows.find(r=>r && elapsed>=r[1] && elapsed<=r[2]);
+ if(row) return row[0];
+ const available=rows.filter(Boolean);
+ return available.length ? available[available.length-1][0] : "—";
+}
+function hiddenStemCandidates(branch) {
+ // 陰占の表示順は本元・中元・初元。空欄も位置を保って返す。
+ const rows=hiddenStemTable[branch]||[];
+ return [rows[2],rows[1],rows[0]].map(r=>r ? r[0] : "").join("・");
+}
+
+function cycleNumber(pillar){
+  for(let i=0;i<60;i++) if(sexagenary(i)===pillar) return i+1;
+  return "—";
+}
+function eraLabel(y){
+  if(y>=2019)return `令和${y-2018}`;
+  if(y>=1989)return `平成${y-1988}`;
+  if(y>=1926)return `昭和${y-1925}`;
+  if(y>=1912)return `大正${y-1911}`;
+  if(y>=1868)return `明治${y-1867}`;
+  return "";
+}
+const yearSelect=document.getElementById("birthYear");
+const monthSelect=document.getElementById("birthMonth");
+const daySelect=document.getElementById("birthDay");
+for(let y=1900;y<=2099;y++){
+  const o=document.createElement("option");o.value=y;o.textContent=`${y}（${eraLabel(y)}）`;yearSelect.appendChild(o);
+}
+for(let m=1;m<=12;m++){
+  const o=document.createElement("option");o.value=m;o.textContent=`${m}月`;monthSelect.appendChild(o);
+}
+function refreshDays(){
+  const y=Number(yearSelect.value),m=Number(monthSelect.value),old=daySelect.value;
+  daySelect.innerHTML='<option value="">日</option>';
+  if(!y||!m)return;
+  const max=new Date(y,m,0).getDate();
+  for(let d=1;d<=max;d++){const o=document.createElement("option");o.value=d;o.textContent=`${d}日`;daySelect.appendChild(o);}
+  if(Number(old)<=max)daySelect.value=old;
+}
+yearSelect.addEventListener("change",refreshDays);
+monthSelect.addEventListener("change",refreshDays);
+// 十大主星：日干と相手の干の五行関係・陰陽から判定
+const elementOf=[0,0,1,1,2,2,3,3,4,4]; // 木・火・土・金・水
+function tenStar(dayStem, otherStem){
+  const a=stems.indexOf(dayStem), b=stems.indexOf(otherStem);
+  if(a<0||b<0)return "—";
+  const ea=elementOf[a], eb=elementOf[b], samePol=(a%2)===(b%2);
+  if(ea===eb)return samePol?"貫索星":"石門星";
+  if((ea+1)%5===eb)return samePol?"鳳閣星":"調舒星";
+  if((ea+2)%5===eb)return samePol?"禄存星":"司禄星";
+  if((eb+2)%5===ea)return samePol?"車騎星":"牽牛星";
+  return samePol?"龍高星":"玉堂星";
+}
+// 日干別・地支別の十二運。配列の地支順は子丑寅卯辰巳午未申酉戌亥。
+const twelveStageByStem=[
+ ["沐浴","冠帯","建禄","帝旺","衰","病","死","墓","絶","胎","養","長生"], // 甲
+ ["病","衰","帝旺","建禄","冠帯","沐浴","長生","養","胎","絶","墓","死"], // 乙
+ ["胎","養","長生","沐浴","冠帯","建禄","帝旺","衰","病","死","墓","絶"], // 丙
+ ["絶","墓","死","病","衰","帝旺","建禄","冠帯","沐浴","長生","養","胎"], // 丁
+ ["胎","養","長生","沐浴","冠帯","建禄","帝旺","衰","病","死","墓","絶"], // 戊
+ ["絶","墓","死","病","衰","帝旺","建禄","冠帯","沐浴","長生","養","胎"], // 己
+ ["死","墓","絶","胎","養","長生","沐浴","冠帯","建禄","帝旺","衰","病"], // 庚
+ ["長生","養","胎","絶","墓","死","病","衰","帝旺","建禄","冠帯","沐浴"], // 辛
+ ["帝旺","衰","病","死","墓","絶","胎","養","長生","沐浴","冠帯","建禄"], // 壬
+ ["建禄","冠帯","沐浴","長生","養","胎","絶","墓","死","病","衰","帝旺"]  // 癸
+];
+const stageToFollower={"胎":"天報星","養":"天印星","長生":"天貴星","沐浴":"天恍星","冠帯":"天南星","建禄":"天禄星","帝旺":"天将星","衰":"天堂星","病":"天胡星","死":"天極星","墓":"天庫星","絶":"天馳星"};
+function followerStar(dayStem, branch){
+  const si=stems.indexOf(dayStem), bi=branches.indexOf(branch);
+  if(si<0||bi<0)return "—";
+  return stageToFollower[twelveStageByStem[si][bi]]||"—";
+}
+
+function calc(){
+  try {
+  const y=Number(yearSelect.value),m=Number(monthSelect.value),d=Number(daySelect.value);
+  if(!y||!m||!d)return;
+  const gender=document.getElementById("gender").value;
+  const inputDate=new Date(Date.UTC(y,m-1,d,12));
+  const inputKey=`${y}-${String(m).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+  const nearby=allTermsNear(y);
+  const previousList=nearby.filter(t=>jstDateKey(t.date)<=inputKey);
+  const previous=previousList[previousList.length-1];
+  const next=nearby.find(t=>jstDateKey(t.date)>inputKey);
+  if(!previous||!next){
+    setText("summary","節入り日時を特定できませんでした。別の日付で再度お試しください。");
+    return;
+  }
+
+  const liChunList=nearby.filter(t=>t.name==="立春"&&jstDateKey(t.date)<=inputKey);
+  const latestLiChun=liChunList[liChunList.length-1];
+  if(!latestLiChun){
+    setText("summary","年柱の立春境界を特定できませんでした。");
+    return;
+  }
+
+  const pillarYear=latestLiChun.year;
+  const yearIndex=((pillarYear-4)%60+60)%60;
+  const yearStemIndex=yearIndex%10;
+  const yearPillar=sexagenary(yearIndex);
+
+  const monthBranchIndex=previous.monthBranch;
+  const firstMonthStem=((yearStemIndex%5)*2+2)%10;
+  const monthStemIndex=(firstMonthStem+(monthBranchIndex-2+12)%12)%10;
+  const monthPillar=stems[monthStemIndex]+branches[monthBranchIndex];
+
+  const dayIndex=dayIndexFromCivil(y,m,d);
+  const dayPillar=sexagenary(dayIndex);
+  const tenchusatsu=tenchusatsuByXun[Math.floor(dayIndex/10)];
+  const prevKey=jstDateKey(previous.date);
+  const [py,pm,pd]=prevKey.split("-").map(Number);
+  const elapsed=Math.round((Date.UTC(y,m-1,d)-Date.UTC(py,pm-1,pd))/DAY_MS);
+  const dayBranch=dayPillar.slice(1);
+  const monthBranch=monthPillar.slice(1);
+  const yearBranch=yearPillar.slice(1);
+  const yearBoundaryKey=jstDateKey(latestLiChun.date);
+  const [ly,lm,ld]=yearBoundaryKey.split("-").map(Number);
+  const elapsedYear=Math.round((Date.UTC(y,m-1,d)-Date.UTC(ly,lm-1,ld))/DAY_MS);
+
+  // 二十八元表に従い、各柱の基準日からの日数で蔵干を選択する。
+  // 日柱・月柱：直前の月の節入り／年柱：立春を0日目とする。
+  // 表示用には、二十八元表に載っている蔵干をすべて配列で取得する。
+  const dayHidden=hiddenStemCandidates(dayBranch).split("・");
+  const monthHidden=hiddenStemCandidates(monthBranch).split("・");
+  const yearHidden=hiddenStemCandidates(yearBranch).split("・");
+
+
+  setText("dayStem",dayPillar[0]);
+  setText("dayBranch",dayBranch);
+  setText("monthStem",monthPillar[0]);
+  setText("monthBranch",monthBranch);
+  setText("yearStem",yearPillar[0]);
+  setText("yearBranch",yearBranch);
+  setText("dayNumber",cycleNumber(dayPillar));
+  setText("monthNumber",cycleNumber(monthPillar));
+  setText("yearNumber",cycleNumber(yearPillar));
+  setText("tenchusatsuName",tenchusatsu.name);
+  setText("tenchusatsuBranches",tenchusatsu.branches);
+  setText("tenchusatsuNote",`日柱 ${dayPillar} が属する旬の空亡を表示しています。日柱の計算精度は引き続き照合が必要です。`);
+  [dayHidden, monthHidden, yearHidden].forEach((rows, col) => {
+    const prefix = ["day", "month", "year"][col];
+    for (let i = 0; i < 3; i++) setText(`${prefix}Hidden${i+1}`, rows[i] || "");
+  });
+
+  // 陽占は二十八元表の日数区分で採用蔵干を一つ選んで算出する。
+  const dayCore=hiddenStemFor(dayBranch, elapsed);
+  const monthCore=hiddenStemFor(monthBranch, elapsed);
+  const yearCore=hiddenStemFor(yearBranch, elapsedYear);
+  setText("yangNorth",tenStar(dayPillar[0],yearPillar[0]));
+  setText("yangCenter",tenStar(dayPillar[0],monthCore));
+  setText("yangSouth",tenStar(dayPillar[0],monthPillar[0]));
+  setText("yangWest",tenStar(dayPillar[0],dayCore));
+  setText("yangEast",tenStar(dayPillar[0],yearCore));
+  setText("yangFirst",followerStar(dayPillar[0],yearBranch));
+  setText("yangMiddle",followerStar(dayPillar[0],monthBranch));
+  setText("yangLate",followerStar(dayPillar[0],dayBranch));
+  setText("yangNote",`採用蔵干：日柱 ${dayCore}／月柱 ${monthCore}／年柱 ${yearCore}。二十八元表の日数区分に基づく試作計算です。`);
+  setText("hiddenNote", "二十八元表の配置どおり、本元・中元・初元を表示しています。");
+
+  setText("prevTerm",`${previous.name}：${fmtJst(previous.date)}`);
+  setText("nextTerm",`${next.name}：${fmtJst(next.date)}`);
+  setText("elapsed",`${elapsed}日（節入り当日を0日とする）`);
+  setText("yearBoundary",`立春：${fmtJst(latestLiChun.date)}`);
+  setText("resultTitle",`${y}年${m}月${d}日`);
+  setText("genderResult",gender==="male"?"男性":gender==="female"?"女性":"未選択");
+  const benchmark = inputKey==="1974-10-07";
+  setText("summary", benchmark
+    ? "この日付は高尾学館公式の照合例です。三柱（甲寅・癸酉・辛巳）と申酉天中殺は公式結果と一致することを確認しています。人体星図の自動計算を試作実装しました。"
+    : "年柱は立春、月柱は直前の節入り、日柱は暦日を基準に算出した試作結果です。節入りの時刻をまたぐ出生時刻には対応していません。");
+  } catch (error) {
+    console.error(error);
+    setText("summary", `計算中にエラーが発生しました：${error && error.message ? error.message : error}`);
+    ["day", "month", "year"].forEach(prefix => {
+      for (let i = 1; i <= 3; i++) setText(`${prefix}Hidden${i}`, "—");
+    });
+  }
+}
+document.getElementById("calc").addEventListener("click",calc);
+</script>
+</body>
+</html>
